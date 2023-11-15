@@ -1,109 +1,195 @@
-<?php
-# *****************************************************************************
-# Lab 14: Consume data from the Plumber API Output (using PHP) ----
-#
-# Course Code: BBT4206
-# Course Name: Business Intelligence II
-# Semester Duration: 21st August 2023 to 28th November 2023
-#
-# Lecturer: Allan Omondi
-# Contact: aomondi [at] strathmore.edu
-#
-# Note: The lecture contains both theory and practice. This file forms part of
-#       the practice. It has required lab work submissions that are graded for
-#       coursework marks.
-#
-# License: GNU GPL-3.0-or-later
-# See LICENSE file for licensing information.
-# *****************************************************************************
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diabetes Prediction Form</title>
 
-// Full documentation of the client URL (cURL) library: https://www.php.net/manual/en/book.curl.php
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f8f8;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
 
-// STEP 1: Set the API endpoint URL
-$apiUrl = 'http://127.0.0.1:5022/diabetes';
+        .container {
+            text-align: center;
+        }
 
-// Initiate a new cURL session/resource
-$curl = curl_init();
+        form {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            display: inline-block;
+            text-align: left;
+            max-width: 400px;
+            width: 100%;
+            box-sizing: border-box;
+        }
 
-// STEP 2: Set the values of the parameters to pass to the model ----
-/*
-// The prediction should be "positive" for diabetes
-$arg_pregnant = 1;
-$arg_glucose = 148;
-$arg_pressure = 72;
-$arg_triceps = 35;
-$arg_insulin = 0;
-$arg_mass = 33.6;
-$arg_pedigree = 0.627;
-$arg_age = 50;
-*/ 
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
 
-// The prediction should be "negative" for diabetes
-$arg_pregnant = 1;
-$arg_glucose = 85;
-$arg_pressure = 66;
-$arg_triceps = 29;
-$arg_insulin = 0;
-$arg_mass = 26.6;
-$arg_pedigree = 0.351;
-$arg_age = 31;
+        input {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
 
-$params = array('arg_pregnant' => $arg_pregnant, 'arg_glucose' => $arg_glucose,
-                'arg_pressure' => $arg_pressure, 'arg_triceps' => $arg_triceps,
-                'arg_insulin' => $arg_insulin, 'arg_mass' => $arg_mass,
-                'arg_pedigree' => $arg_pedigree, 'arg_age' => $arg_age);
+        input[type="submit"] {
+            background-color: #4caf50;
+            color: #fff;
+            cursor: pointer;
+            width: 100%;
+        }
 
-// STEP 3: Set the cURL options
-// CURLOPT_RETURNTRANSFER: true to return the transfer as a string of the return value of curl_exec() instead of outputting it directly.
-curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-$apiUrl = $apiUrl . '?' . http_build_query($params);
-curl_setopt($curl, CURLOPT_URL, $apiUrl);
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
 
-// For testing:
-echo "The generated URL sent to the API is:<br>".$apiUrl."<br><br>";
+        .result-container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: left;
+            display: inline-block;
+            margin-top: 20px; /* Adjust the margin to separate the form and results */
+            max-width: 400px;
+            width: 100%;
+            box-sizing: border-box;
+        }
 
-// Make a GET request
-$response = curl_exec($curl);
+        .result-item {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
 
-// Check for cURL errors
-if (curl_errno($curl)) {
-    $error = curl_error($curl);
-    // Handle the error appropriately
-    die("cURL Error: $error");
-}
+<div class="container">
 
-// Close cURL session/resource
-curl_close($curl);
+    <?php
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        // Process the form data
+        $arg_pregnant = $_POST['arg_pregnant'];
+        $arg_glucose = $_POST['arg_glucose'];
+        $arg_pressure = $_POST['arg_pressure'];
+        $arg_triceps = $_POST['arg_triceps'];
+        $arg_insulin = $_POST['arg_insulin'];
+        $arg_mass = $_POST['arg_mass'];
+        $arg_pedigree = $_POST['arg_pedigree'];
+        $arg_age = $_POST['arg_age'];
 
-// Process the response
-// echo "<br>The predicted output in JSON format is:<br>" . var_dump($response) . "<br><br>";
+        // Set the API endpoint URL with the updated port
+        $apiUrl = 'http://127.0.0.1:8081/diabetes';
 
-// Decode the JSON into normal text
-$data = json_decode($response, true);
+        // Initiate a new cURL session/resource
+        $curl = curl_init();
 
-// echo "<br>The predicted output in decoded JSON format is:<br>" . var_dump($data) . "<br><br>";
+        // Set the values of the parameters to pass to the model
+        $params = array(
+            'arg_pregnant' => $arg_pregnant,
+            'arg_glucose' => $arg_glucose,
+            'arg_pressure' => $arg_pressure,
+            'arg_triceps' => $arg_triceps,
+            'arg_insulin' => $arg_insulin,
+            'arg_mass' => $arg_mass,
+            'arg_pedigree' => $arg_pedigree,
+            'arg_age' => $arg_age
+        );
 
+        // Set the cURL options
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_URL, $apiUrl . '?' . http_build_query($params));
 
-// Check if the response was successful
-if (isset($data['0'])) {
-    // API request was successful
-    // Access the data returned by the API
-	echo "The predicted diabetes status is:<br>";
-	
-    // Process the data
-	foreach($data as $repository) {
-		echo $repository['0'],$repository['1'],$repository['2'],"<br>";
-	}
-} else {
-    // API request failed or returned an error
-    // Handle the error appropriately
-    echo "API Error: " . $data['message'];
-}
+        // For testing:
+        echo "<p>The generated URL sent to the API is:<br>" . $apiUrl . '?' . http_build_query($params) . "</p><br>";
 
-// REQUIRED LAB WORK SUBMISSION:
-/*
-Create a form in the web user interface to post the parameter values
-(e.g., $arg_pregnant, $arg_glucose, etc.) instead of setting them manually
-in Line 22-49.
-*/
-?>
+        // Make a GET request
+        $response = curl_exec($curl);
+
+        // Check for cURL errors
+        if (curl_errno($curl)) {
+            $error = curl_error($curl);
+            // Handle the error appropriately
+            die("<p style='color: red;'>cURL Error: $error</p>");
+        }
+
+        // Close cURL session/resource
+        curl_close($curl);
+
+        // Process the response
+        $data = json_decode($response, true);
+
+        // Check if the response was successful
+        if (isset($data[0])) {
+            // API request was successful
+            echo "<div class='result-container'>";
+            echo "<h2>The predicted diabetes status is:</h2>";
+
+            // Process the data
+            foreach ($data as $repository) {
+                echo "<div class='result-item'>";
+                echo $repository[0] . $repository[1] . $repository[2] . "<br>";
+                echo "</div>";
+            }
+
+            echo "</div>";
+        } else {
+            // API request failed or returned an error
+            // Handle the error appropriately
+            echo "<p style='color: red;'>API Error: " . $data['message'] . "</p>";
+        }
+    }
+    ?>
+
+    <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+        <!-- Add more input fields as needed -->
+        <h2>Diabetes Prediction Form</h2>
+
+        <label for="arg_pregnant">Pregnant:</label>
+        <input type="number" name="arg_pregnant" required><br>
+
+        <label for="arg_glucose">Glucose:</label>
+        <input type="number" name="arg_glucose" required><br>
+
+        <label for="arg_pressure">Pressure:</label>
+        <input type="number" name="arg_pressure" required><br>
+
+        <label for="arg_triceps">Triceps:</label>
+        <input type="number" name="arg_triceps" required><br>
+
+        <label for="arg_insulin">Insulin:</label>
+        <input type="number" name="arg_insulin" required><br>
+
+        <label for="arg_mass">Mass:</label>
+        <input type="number" name="arg_mass" required><br>
+
+        <label for="arg_pedigree">Pedigree:</label>
+        <input type="number" name="arg_pedigree" step="0.001" required><br>
+
+        <label for="arg_age">Age:</label>
+        <input type="number" name="arg_age" required><br>
+
+        <input type="submit" value="Predict">
+    </form>
+
+</div>
+
+</body>
+</html>
