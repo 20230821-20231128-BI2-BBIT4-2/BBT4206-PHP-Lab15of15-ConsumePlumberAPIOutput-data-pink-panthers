@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diabetes Prediction Form</title>
+    <title>Diabetes Prediction</title>
 
     <style>
         body {
@@ -68,7 +68,7 @@
             padding: 20px;
             text-align: left;
             display: inline-block;
-            margin-top: 20px; /* Adjust the margin to separate the form and results */
+            margin-top: 20px; 
             max-width: 400px;
             width: 100%;
             box-sizing: border-box;
@@ -159,7 +159,6 @@
     ?>
 
     <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-        <!-- Add more input fields as needed -->
         <h2>Diabetes Prediction Form</h2>
 
         <label for="arg_pregnant">Pregnant:</label>
